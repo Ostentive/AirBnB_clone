@@ -194,4 +194,26 @@ class HBNBCommand(cmd.Cmd):
                 print("** attribute name missing **")
             elif not value:
                 print("** value missing **")
- 
+             else:
+                cast = None
+                if not re.search('^".*"$', value):
+                    if '.' in value:
+                        cast = float
+                    else:
+                        cast = int
+                else:
+                    value = value.replace('"', '')
+                attributes = storage.attributes()[classname]
+                if attribute in attributes:
+                    value = attributes[attribute](value)
+                elif cast:
+                    try:
+                        value = cast(value)
+                    except ValueError:
+                        pass  # fine, stay a string then
+                setattr(storage.all()[key], attribute, value)
+                storage.all()[key].save()
+
+
+if __name__ == '__main__':
+    HBNBCommand().cmdloop()
